@@ -3,6 +3,7 @@ package main;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(123);
+        Form f = new Form();
+        new Thread(f).start();
     }
 }
