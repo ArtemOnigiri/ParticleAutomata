@@ -9,8 +9,6 @@ public class Form extends JFrame implements Runnable {
     public static final int w = 800;
     public static final int h = 800;
 
-    public static final int SQUARE_SIZE = 2;
-
     public static final Color BG = new Color(30, 50, 100, 255);
     public static final int NODE_RADIUS = 5;
 
@@ -29,19 +27,21 @@ public class Form extends JFrame implements Runnable {
     public static BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
     public static final float[][] COUPLING = {
-            {	1,	-1,	-1,	1,	1,	1,	-1,	1	},
-            {	-1,	1,	-1,	1,	1,	1,	1,	1	},
-            {	-1,	-1,	1,	-1,	1,	1,	-1,	1	},
-            {	1,	1,	1,	-1,	1,	1,	1,	1	},
-            {	1,	1,	1,	1,	-1,	-1,	-1,	1	},
-            {	1,	1,	-1,	1,	1,	-1,	-1,	1	},
-            {	-1,	1,	-1,	1,	1,	1,	-1,	1	},
-            {	1,	1,	1,	1,	-1,	1,	1,	-1	}
+//            {	1,	-1,	-1,	1,	1,	1,	-1,	1	},
+//            {	-1,	1,	-1,	1,	1,	1,	1,	1	},
+//            {	-1,	-1,	1,	-1,	1,	1,	-1,	1	},
+//            {	1,	1,	1,	-1,	1,	1,	1,	1	},
+//            {	1,	1,	1,	1,	-1,	-1,	-1,	1	},
+//            {	1,	1,	-1,	1,	1,	-1,	-1,	1	},
+//            {	-1,	1,	-1,	1,	1,	1,	-1,	1	},
+//            {	1,	1,	1,	1,	-1,	1,	1,	-1	}
+            {1, 1},
+            {1, 1}
     };
 
     public static final Color[] COLORS = {
-            new Color(250, 30, 30),
-            new Color(250, 130, 40),
+            new Color(250, 0, 30),
+            new Color(200, 150, 0),
             new Color(30, 180, 70),
             new Color(0, 150, 230),
             new Color(10, 20, 230),
@@ -51,22 +51,20 @@ public class Form extends JFrame implements Runnable {
     };
 
     public Form() {
-        this.setSize(w + 16, h + 38);
-        this.setVisible(true);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLocation(50, 50);
-        this.add(new JLabel(new ImageIcon(img)));
-
         for (int i = 0; i < fw; i++) {
             for (int j = 0; j < fh; j++) {
                 fields[i][j] = new Field();
             }
         }
-
         for (int i = 0; i < nodeCount; i++) {
             Particle p = new Particle((int)(Math.random() * COUPLING.length), (float)(Math.random() * w), (float)(Math.random() * h));
             fields[(int)(p.x / Form.maxDist)][(int)(p.y / Form.maxDist)].particles.add(p);
         }
+        this.setSize(w + 16, h + 38);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocation(50, 50);
+        this.add(new JLabel(new ImageIcon(img)));
     }
 
     @Override
@@ -79,10 +77,36 @@ public class Form extends JFrame implements Runnable {
     @Override
     public void paint(Graphics g) {
         long time = System.currentTimeMillis();
+        drawScene(img);
+        logic();
         Graphics2D g2 = img.createGraphics();
+        g2.setColor(Color.RED);
+        long frameDif = System.currentTimeMillis() - time;
+        if(frameDif == 0) frameDif = 1;
+        long fps = 1000 / frameDif;
+        g2.drawString(fps + "", 100, 100);
+        ((Graphics2D)g).drawImage(img, null, 8, 30);
+        frame++;
+    }
+
+    public void drawScene(BufferedImage image) {
+        Graphics2D g2 = image.createGraphics();
         g2.setColor(BG);
         g2.fillRect(0, 0, w, h);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        for (int i = 0; i < fw; i++) {
+            for (int j = 0; j < fh; j++) {
+                Field field = fields[i][j];
+                for (int i1 = 0; i1 < field.particles.size(); i1++) {
+                    Particle a = field.particles.get(i1);
+                    g2.setColor(COLORS[a.type]);
+                    g2.fillOval((int) a.x - NODE_RADIUS, (int) a.y - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                }
+            }
+        }
+    }
+
+    public void logic() {
         for (int i = 0; i < fw; i++) {
             for (int j = 0; j < fh; j++) {
                 Field field = fields[i][j];
@@ -92,11 +116,11 @@ public class Form extends JFrame implements Runnable {
                     a.y += a.sy;
                     a.sx *= 0.98f;
                     a.sy *= 0.98f;
-					float magnitude = (float)Math.sqrt(a.sx * a.sx + a.sy * a.sy);
-					if(magnitude > 1f) {
-						a.sx /= magnitude;
-						a.sy /= magnitude;
-					}
+                    float magnitude = (float)Math.sqrt(a.sx * a.sx + a.sy * a.sy);
+                    if(magnitude > 1f) {
+                        a.sx /= magnitude;
+                        a.sy /= magnitude;
+                    }
                     if(a.x < BORDER) {
                         a.sx += SPEED * 0.005f;
                         if(a.x < 0) {
@@ -145,8 +169,6 @@ public class Form extends JFrame implements Runnable {
                 Field field = fields[i][j];
                 for (int i1 = 0; i1 < field.particles.size(); i1++) {
                     Particle a = field.particles.get(i1);
-                    g2.setColor(COLORS[a.type]);
-                    g2.fillOval((int)a.x - NODE_RADIUS, (int)a.y - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
                     for (int j1 = i1 + 1; j1 < field.particles.size(); j1++) {
                         Particle b = field.particles.get(j1);
                         applyForce(a, b);
@@ -178,13 +200,6 @@ public class Form extends JFrame implements Runnable {
                 }
             }
         }
-        g2.setColor(Color.RED);
-        long frameDif = System.currentTimeMillis() - time;
-        if(frameDif == 0) frameDif = 1;
-        long fps = 1000 / frameDif;
-        g2.drawString(fps + "", 100, 100);
-        ((Graphics2D)g).drawImage(img, null, 8, 30);
-        frame++;
     }
 
     public void applyForce(Particle a, Particle b) {
