@@ -35,8 +35,9 @@ public class Form extends JFrame implements Runnable {
 //            {	1,	1,	-1,	1,	1,	-1,	-1,	1	},
 //            {	-1,	1,	-1,	1,	1,	1,	-1,	1	},
 //            {	1,	1,	1,	1,	-1,	1,	1,	-1	}
-            {1, 1},
-            {1, 1}
+            {1, -1, -1},
+            {1, -1, -1},
+            {1, 1, -1}
     };
 
     public static final Color[] COLORS = {
