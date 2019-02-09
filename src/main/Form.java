@@ -13,7 +13,7 @@ public class Form {
     public static final int w = 800;
     public static final int h = 800;
 
-    public static final Color BG = new Color(30, 50, 100, 255);
+    public static final Color BG = new Color(20, 30, 70, 255);
     public static final int NODE_RADIUS = 5;
 
     public static final int nodeCount = 500;
@@ -29,7 +29,7 @@ public class Form {
 
     public static BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
-    public static final int size = 2;
+    public static final int size = 3;
 
     public static boolean check(int a, Set<Integer> groups, int c) {
         if(groups.contains(a)) return false;
@@ -73,9 +73,9 @@ public class Form {
     }
 
     public static final Color[] COLORS = {
-            new Color(250, 0, 30),
-            new Color(200, 150, 0),
-            new Color(30, 180, 70),
+            new Color(255, 200, 0),
+            new Color(0, 150, 150),
+            new Color(150, 0, 100),
             new Color(0, 150, 230),
             new Color(10, 20, 230),
             new Color(130, 0, 200),
@@ -110,10 +110,19 @@ public class Form {
             }
             drawScene(img);
             try {
-                File outputFile = new File("img2/img" + g + ".png");
+                File outputFile = new File("img3/img" + g + ".png");
                 ImageIO.write(img, "png", outputFile);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+            for (int i = 0; i < fw; i++) {
+                for (int j = 0; j < fh; j++) {
+                    Field field = fields[i][j];
+                    for (int i1 = 0; i1 < field.particles.size(); i1++) {
+                        Particle a = field.particles.get(i1);
+                        a.flush((float)(Math.random() * w), (float)(Math.random() * h));
+                    }
+                }
             }
         }
     }

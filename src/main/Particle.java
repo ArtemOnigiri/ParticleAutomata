@@ -16,4 +16,11 @@ public class Particle {
         this.sy = 0;
     }
 
+    public void flush(float x, float y) {
+        this.x = x;
+        this.y = y;
+        this.sx = 0;
+        this.sy = 0;
+    }
+
 }
