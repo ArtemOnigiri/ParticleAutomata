@@ -13,10 +13,9 @@ public class Form extends JFrame implements Runnable {
     public static final int NODE_RADIUS = 5;
 
     public static final int nodeCount = 500;
-    public static final int maxDist = 160;
+    public static final int maxDist = 50;
     public static final int maxDist2 = maxDist * maxDist;
-    public static final float SPEED = 1f;
-    public static final int BORDER = 30;
+    public static final float SPEED = 4f;
 
     public static final int fw = w / maxDist + 1;
     public static final int fh = h / maxDist + 1;
@@ -35,8 +34,9 @@ public class Form extends JFrame implements Runnable {
 //            {	1,	1,	-1,	1,	1,	-1,	-1,	1	},
 //            {	-1,	1,	-1,	1,	1,	1,	-1,	1	},
 //            {	1,	1,	1,	1,	-1,	1,	1,	-1	}
-            {1, 1},
-            {1, 1}
+            {-1, 1, 1},
+            {-1, -1, -1},
+            {1, 1, -1}
     };
 
     public static final Color[] COLORS = {
@@ -112,43 +112,24 @@ public class Form extends JFrame implements Runnable {
                 Field field = fields[i][j];
                 for (int i1 = 0; i1 < field.particles.size(); i1++) {
                     Particle a = field.particles.get(i1);
+                    float magnitude = (float)Math.sqrt(a.tx * a.tx + a.ty * a.ty);
+                    double angle = Math.atan2(a.ty, a.tx);
+                    a.sx += (float)Math.cos(angle) * magnitude * SPEED;
+                    a.sy += (float)Math.sin(angle) * magnitude * SPEED;
+//                    float magnitudeMax = (float)Math.sqrt(a.sx * a.sx + a.sy * a.sy);
+//                    if(magnitudeMax > 1f) {
+//                        a.sx /= magnitudeMax;
+//                        a.sy /= magnitudeMax;
+//                    }
                     a.x += a.sx;
                     a.y += a.sy;
-                    a.sx *= 0.98f;
-                    a.sy *= 0.98f;
-                    float magnitude = (float)Math.sqrt(a.sx * a.sx + a.sy * a.sy);
-                    if(magnitude > 1f) {
-                        a.sx /= magnitude;
-                        a.sy /= magnitude;
-                    }
-                    if(a.x < BORDER) {
-                        a.sx += SPEED * 0.005f;
-                        if(a.x < 0) {
-                            a.x = -a.x;
-                            a.sx *= -0.5f;
-                        }
-                    }
-                    else if(a.x > w - BORDER) {
-                        a.sx -= SPEED * 0.005f;
-                        if(a.x > w) {
-                            a.x = w * 2 - a.x;
-                            a.sx *= -0.5f;
-                        }
-                    }
-                    if(a.y < BORDER) {
-                        a.sy += SPEED * 0.005f;
-                        if(a.y < 0) {
-                            a.y = -a.y;
-                            a.sy *= -0.5f;
-                        }
-                    }
-                    else if(a.y > h - BORDER) {
-                        a.sy -= SPEED * 0.005f;
-                        if(a.y > h) {
-                            a.y = h * 2 - a.y;
-                            a.sy *= -0.5f;
-                        }
-                    }
+                    float slip = a.slip;
+                    if(slip > 1) slip = 1;
+                    a.sx *= slip;
+                    a.sy *= slip;
+                    a.tx = 0;
+                    a.ty = 0;
+                    a.slip = 1f;
                 }
             }
         }
@@ -157,9 +138,13 @@ public class Form extends JFrame implements Runnable {
                 Field field = fields[i][j];
                 for (int i1 = 0; i1 < field.particles.size(); i1++) {
                     Particle a = field.particles.get(i1);
+                    a.x = ((a.x % w) + w) % w;
+                    a.y = ((a.y % h) + h) % h;
                     if(((int)(a.x / Form.maxDist) != i) || ((int)(a.y / Form.maxDist) != j)) {
                         field.particles.remove(a);
-                        Form.fields[(int)(a.x / Form.maxDist)][(int)(a.y / Form.maxDist)].particles.add(a);
+                        int x = (int)(a.x / Form.maxDist);
+                        int y = (int)(a.y / Form.maxDist);
+                        Form.fields[x][y].particles.add(a);
                     }
                 }
             }
@@ -171,52 +156,51 @@ public class Form extends JFrame implements Runnable {
                     Particle a = field.particles.get(i1);
                     for (int j1 = i1 + 1; j1 < field.particles.size(); j1++) {
                         Particle b = field.particles.get(j1);
-                        applyForce(a, b);
+                        applyForce(a, b, false, false);
                     }
-                    if(i < fw - 1) {
-                        int iNext = i + 1;
-                        Field field1 = fields[iNext][j];
-                        for (int j1 = 0; j1 < field1.particles.size(); j1++) {
-                            Particle b = field1.particles.get(j1);
-                            applyForce(a, b);
-                        }
+                    int iNext = (i + 1) % fw;
+                    Field field1 = fields[iNext][j];
+                    for (int j1 = 0; j1 < field1.particles.size(); j1++) {
+                        Particle b = field1.particles.get(j1);
+                        applyForce(a, b, iNext == 0, false);
                     }
-                    if(j < fh - 1) {
-                        int jNext = j + 1;
-                        Field field1 = fields[i][jNext];
-                        for (int j1 = 0; j1 < field1.particles.size(); j1++) {
-                            Particle b = field1.particles.get(j1);
-                            applyForce(a, b);
-                        }
-                        if(i < fw - 1) {
-                            int iNext = i + 1;
-                            Field field2 = fields[iNext][jNext];
-                            for (int j1 = 0; j1 < field2.particles.size(); j1++) {
-                                Particle b = field2.particles.get(j1);
-                                applyForce(a, b);
-                            }
-                        }
+                    int jNext = (j + 1) % fh;
+                    Field field2 = fields[i][jNext];
+                    for (int j1 = 0; j1 < field2.particles.size(); j1++) {
+                        Particle b = field2.particles.get(j1);
+                        applyForce(a, b, false, jNext == 0);
+                    }
+                    Field field3 = fields[iNext][jNext];
+                    for (int j1 = 0; j1 < field3.particles.size(); j1++) {
+                        Particle b = field3.particles.get(j1);
+                        applyForce(a, b, iNext == 0, jNext == 0);
                     }
                 }
             }
         }
     }
 
-    public void applyForce(Particle a, Particle b) {
-        float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    public void applyForce(Particle a, Particle b, boolean bxPlus, boolean byPlus) {
+        float bx = b.x;
+        float by = b.y;
+        if(bxPlus) bx += w;
+        if(byPlus) by += h;
+        float d2 = (a.x - bx) * (a.x - bx) + (a.y - by) * (a.y - by);
         if(d2 < maxDist2) {
-            double angle = Math.atan2(a.y - b.y, a.x - b.x);
+            double angle = Math.atan2(a.y - by, a.x - bx);
             if(d2 < 1) d2 = 1;
             float dA = COUPLING[a.type][b.type] / d2;
             float dB = COUPLING[b.type][a.type] / d2;
             if(d2 < NODE_RADIUS * NODE_RADIUS * 4) {
-                if(dA < 0) dA = 1 / d2;
-                if(dB < 0) dB = 1 / d2;
+                dA = 1 / d2;
+                dB = 1 / d2;
             }
-            a.sx += (float)Math.cos(angle) * dA * SPEED;
-            a.sy += (float)Math.sin(angle) * dA * SPEED;
-            b.sx -= (float)Math.cos(angle) * dB * SPEED;
-            b.sy -= (float)Math.sin(angle) * dB * SPEED;
+            a.tx += (float)Math.cos(angle) * dA;
+            a.ty += (float)Math.sin(angle) * dA;
+            b.tx -= (float)Math.cos(angle) * dB;
+            b.ty -= (float)Math.sin(angle) * dB;
+            a.slip *= (1 - (1 / d2));
+            b.slip *= (1 - (1 / d2));
         }
     }
 
