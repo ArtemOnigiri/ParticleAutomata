@@ -9,11 +9,11 @@ public class Form extends JFrame implements Runnable {
     public static final int w = 800;
     public static final int h = 800;
 
-    public static final Color BG = new Color(30, 50, 100, 255);
+    public static final Color BG = new Color(20, 55, 75, 255);
     public static final int NODE_RADIUS = 5;
 
     public static final int nodeCount = 500;
-    public static final int maxDist = 160;
+    public static final int maxDist = 100;
     public static final int maxDist2 = maxDist * maxDist;
     public static final float SPEED = 1f;
     public static final int BORDER = 30;
@@ -41,9 +41,9 @@ public class Form extends JFrame implements Runnable {
     };
 
     public static final Color[] COLORS = {
-            new Color(250, 0, 30),
-            new Color(200, 150, 0),
-            new Color(30, 180, 70),
+            new Color(250, 20, 20),
+            new Color(200, 140, 100),
+            new Color(80, 170, 140),
             new Color(0, 150, 230),
             new Color(10, 20, 230),
             new Color(130, 0, 200),
@@ -77,15 +77,15 @@ public class Form extends JFrame implements Runnable {
 
     @Override
     public void paint(Graphics g) {
-        long time = System.currentTimeMillis();
+//        long time = System.currentTimeMillis();
         drawScene(img);
         logic();
         Graphics2D g2 = img.createGraphics();
-        g2.setColor(Color.RED);
-        long frameDif = System.currentTimeMillis() - time;
-        if(frameDif == 0) frameDif = 1;
-        long fps = 1000 / frameDif;
-        g2.drawString(fps + "", 100, 100);
+//        g2.setColor(Color.RED);
+//        long frameDif = System.currentTimeMillis() - time;
+//        if(frameDif == 0) frameDif = 1;
+//        long fps = 1000 / frameDif;
+//        g2.drawString(fps + "", 100, 100);
         ((Graphics2D)g).drawImage(img, null, 8, 30);
         frame++;
     }
@@ -211,8 +211,8 @@ public class Form extends JFrame implements Runnable {
             float dA = COUPLING[a.type][b.type] / d2;
             float dB = COUPLING[b.type][a.type] / d2;
             if(d2 < NODE_RADIUS * NODE_RADIUS * 4) {
-                if(dA < 0) dA = 1 / d2;
-                if(dB < 0) dB = 1 / d2;
+                dA = 1 / d2;
+                dB = 1 / d2;
             }
             a.sx += (float)Math.cos(angle) * dA * SPEED;
             a.sy += (float)Math.sin(angle) * dA * SPEED;
