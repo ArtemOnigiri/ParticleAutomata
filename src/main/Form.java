@@ -1,8 +1,11 @@
 package main;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Form extends JFrame implements Runnable {
 
@@ -13,7 +16,7 @@ public class Form extends JFrame implements Runnable {
     public static final int NODE_RADIUS = 5;
 
     public static final int nodeCount = 500;
-    public static final int maxDist = 100;
+    public static final int maxDist = 50;
     public static final int maxDist2 = maxDist * maxDist;
     public static final float SPEED = 1f;
     public static final int BORDER = 30;
@@ -35,9 +38,9 @@ public class Form extends JFrame implements Runnable {
 //            {	1,	1,	-1,	1,	1,	-1,	-1,	1	},
 //            {	-1,	1,	-1,	1,	1,	1,	-1,	1	},
 //            {	1,	1,	1,	1,	-1,	1,	1,	-1	}
-            {1, -1, -1},
-            {1, -1, -1},
-            {1, 1, -1}
+            {2, -1, 1},
+            {-1, -1, 1},
+            {-1, 1, 1}
     };
 
     public static final Color[] COLORS = {
@@ -158,9 +161,46 @@ public class Form extends JFrame implements Runnable {
                 Field field = fields[i][j];
                 for (int i1 = 0; i1 < field.particles.size(); i1++) {
                     Particle a = field.particles.get(i1);
+                    a.neighbors = 0;
                     if(((int)(a.x / Form.maxDist) != i) || ((int)(a.y / Form.maxDist) != j)) {
                         field.particles.remove(a);
                         Form.fields[(int)(a.x / Form.maxDist)][(int)(a.y / Form.maxDist)].particles.add(a);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < fw; i++) {
+            for (int j = 0; j < fh; j++) {
+                Field field = fields[i][j];
+                for (int i1 = 0; i1 < field.particles.size(); i1++) {
+                    Particle a = field.particles.get(i1);
+                    for (int j1 = i1 + 1; j1 < field.particles.size(); j1++) {
+                        Particle b = field.particles.get(j1);
+                        count(a, b);
+                    }
+                    if(i < fw - 1) {
+                        int iNext = i + 1;
+                        Field field1 = fields[iNext][j];
+                        for (int j1 = 0; j1 < field1.particles.size(); j1++) {
+                            Particle b = field1.particles.get(j1);
+                            count(a, b);
+                        }
+                    }
+                    if(j < fh - 1) {
+                        int jNext = j + 1;
+                        Field field1 = fields[i][jNext];
+                        for (int j1 = 0; j1 < field1.particles.size(); j1++) {
+                            Particle b = field1.particles.get(j1);
+                            count(a, b);
+                        }
+                        if(i < fw - 1) {
+                            int iNext = i + 1;
+                            Field field2 = fields[iNext][jNext];
+                            for (int j1 = 0; j1 < field2.particles.size(); j1++) {
+                                Particle b = field2.particles.get(j1);
+                                count(a, b);
+                            }
+                        }
                     }
                 }
             }
@@ -203,16 +243,34 @@ public class Form extends JFrame implements Runnable {
         }
     }
 
+    public void count(Particle a, Particle b) {
+        float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+        if(d2 < maxDist2) {
+            if(d2 < 1) d2 = 1;
+            a.neighbors += COUPLING[a.type][b.type] / d2;
+            b.neighbors += COUPLING[b.type][a.type] / d2;
+        }
+    }
+
     public void applyForce(Particle a, Particle b) {
         float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         if(d2 < maxDist2) {
             double angle = Math.atan2(a.y - b.y, a.x - b.x);
             if(d2 < 1) d2 = 1;
-            float dA = COUPLING[a.type][b.type] / d2;
-            float dB = COUPLING[b.type][a.type] / d2;
+            float dA = -1 / d2;
+            float dB = -1 / d2;
             if(d2 < NODE_RADIUS * NODE_RADIUS * 4) {
-                dA = 1 / d2;
-                dB = 1 / d2;
+                dA = -dA;
+                dB = -dB;
+            }
+            else {
+                float N = 0.1f;
+                if(a.neighbors > N || a.neighbors < -N) {
+                    dA = -dA;
+                }
+                if(b.neighbors > N || b.neighbors < -N) {
+                    dB = -dB;
+                }
             }
             a.sx += (float)Math.cos(angle) * dA * SPEED;
             a.sy += (float)Math.sin(angle) * dA * SPEED;
