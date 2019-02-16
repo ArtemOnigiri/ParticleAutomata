@@ -40,6 +40,12 @@ public class Form extends JFrame implements Runnable {
             {1, 1, -1}
     };
 
+    public static int[] SIZE = {
+            5,
+            3,
+            8
+    };
+
     public static final Color[] COLORS = {
             new Color(250, 20, 20),
             new Color(200, 140, 100),
@@ -101,7 +107,7 @@ public class Form extends JFrame implements Runnable {
                 for (int i1 = 0; i1 < field.particles.size(); i1++) {
                     Particle a = field.particles.get(i1);
                     g2.setColor(COLORS[a.type]);
-                    g2.fillOval((int) a.x - NODE_RADIUS, (int) a.y - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+                    g2.fillOval((int) a.x - SIZE[a.type], (int) a.y - SIZE[a.type], SIZE[a.type] * 2, SIZE[a.type] * 2);
                 }
             }
         }
@@ -210,14 +216,16 @@ public class Form extends JFrame implements Runnable {
             if(d2 < 1) d2 = 1;
             float dA = COUPLING[a.type][b.type] / d2;
             float dB = COUPLING[b.type][a.type] / d2;
-            if(d2 < NODE_RADIUS * NODE_RADIUS * 4) {
+            if(d2 < SIZE[a.type] * SIZE[a.type] * 4) {
                 dA = 1 / d2;
                 dB = 1 / d2;
             }
-            a.sx += (float)Math.cos(angle) * dA * SPEED;
-            a.sy += (float)Math.sin(angle) * dA * SPEED;
-            b.sx -= (float)Math.cos(angle) * dB * SPEED;
-            b.sy -= (float)Math.sin(angle) * dB * SPEED;
+            float mass = SIZE[a.type] / 3;
+            mass *= mass;
+            a.sx += (float)Math.cos(angle) * dA * SPEED / mass;
+            a.sy += (float)Math.sin(angle) * dA * SPEED / mass;
+            b.sx -= (float)Math.cos(angle) * dB * SPEED / mass;
+            b.sy -= (float)Math.sin(angle) * dB * SPEED / mass;
         }
     }
 
