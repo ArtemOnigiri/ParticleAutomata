@@ -9,14 +9,14 @@ import java.io.IOException;
 
 public class Form extends JFrame implements Runnable {
 
-    public static final int w = 800;
-    public static final int h = 800;
+    public static final int w = 960;
+    public static final int h = 540;
 
     public static final Color BG = new Color(20, 55, 75, 255);
-    public static final int NODE_RADIUS = 5;
+    public static final int NODE_RADIUS = 3;
 
-    public static final int nodeCount = 500;
-    public static final int maxDist = 50;
+    public static final int nodeCount = 1000;
+    public static final int maxDist = 30;
     public static final int maxDist2 = maxDist * maxDist;
     public static final float SPEED = 1f;
     public static final int BORDER = 30;
@@ -82,8 +82,14 @@ public class Form extends JFrame implements Runnable {
     public void paint(Graphics g) {
 //        long time = System.currentTimeMillis();
         drawScene(img);
-        logic();
-        Graphics2D g2 = img.createGraphics();
+        for (int i = 0; i < 10; i++) logic();
+//        Graphics2D g2 = img.createGraphics();
+//        try {
+//            File outputFile = new File("ll/img" + frame + ".png");
+//            ImageIO.write(img, "png", outputFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 //        g2.setColor(Color.RED);
 //        long frameDif = System.currentTimeMillis() - time;
 //        if(frameDif == 0) frameDif = 1;
@@ -118,8 +124,8 @@ public class Form extends JFrame implements Runnable {
                     Particle a = field.particles.get(i1);
                     a.x += a.sx;
                     a.y += a.sy;
-                    a.sx *= 0.98f;
-                    a.sy *= 0.98f;
+                    a.sx *= 0.97f;
+                    a.sy *= 0.97f;
                     float magnitude = (float)Math.sqrt(a.sx * a.sx + a.sy * a.sy);
                     if(magnitude > 1f) {
                         a.sx /= magnitude;
@@ -256,9 +262,9 @@ public class Form extends JFrame implements Runnable {
         float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         if(d2 < maxDist2) {
             double angle = Math.atan2(a.y - b.y, a.x - b.x);
-            if(d2 < 1) d2 = 1;
-            float dA = -1 / d2;
-            float dB = -1 / d2;
+            if(d2 < 0.25f) d2 = 0.25f;
+            float dA = -0.25f / d2;
+            float dB = -0.25f / d2;
             if(d2 < NODE_RADIUS * NODE_RADIUS * 4) {
                 dA = -dA;
                 dB = -dB;
