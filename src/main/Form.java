@@ -1,8 +1,11 @@
 package main;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,7 +18,7 @@ public class Form extends JFrame implements Runnable {
     public static final Color LINK = new Color(255, 230, 0, 200);
     public static final int NODE_RADIUS = 5;
 
-    public static final int nodeCount = 400;
+    public static final int nodeCount = 800;
     public static final int maxDist = 100;
     public static final int maxDist2 = maxDist * maxDist;
     public static final float SPEED = 4f;
@@ -32,7 +35,7 @@ public class Form extends JFrame implements Runnable {
     public static final float[][] COUPLING = {
             {1, 1, -1},
             {1, 1, 1},
-            {1, -1, 1}
+            {1, 1, 1}
     };
 
     public static int[] LINKS = {
@@ -43,7 +46,7 @@ public class Form extends JFrame implements Runnable {
 
     public static final float[][] LINKS_POSSIBLE = {
             {0, 1, 1},
-            {1, 1, 1},
+            {1, 2, 1},
             {1, 1, 2}
     };
 
@@ -65,7 +68,7 @@ public class Form extends JFrame implements Runnable {
             }
         }
         for (int i = 0; i < nodeCount; i++) {
-            add((int)(Math.random() * COUPLING.length), (float)(Math.random() * w), (float)(Math.random() * h));
+            add((int)(Math.random() * 2), (float)(Math.random() * w), (float)(Math.random() * h));
         }
 
         // Spinner
@@ -85,6 +88,19 @@ public class Form extends JFrame implements Runnable {
 //            }
 //            add(0, x + 30, y + 5);
 //        }
+
+//        addToCenter(2, -20, 0);
+//        addToCenter(2, -10, 10);
+//        addToCenter(2, 0, 20);
+//        addToCenter(2, 10, 10);
+//        addToCenter(2, 20, 0);
+//        addToCenter(2, -10, -30);
+//        addToCenter(2, 0, -30);
+//        addToCenter(2, 10, -30);
+//        addToCenter(1, -10, -20);
+//        addToCenter(1, 0, -20);
+//        addToCenter(1, 10, -20);
+//        addToCenter(0, 0, -40);
 
         this.setSize(w + 16, h + 38);
         this.setVisible(true);
@@ -115,8 +131,14 @@ public class Form extends JFrame implements Runnable {
     public void paint(Graphics g) {
 //        long time = System.currentTimeMillis();
         drawScene(img);
-        logic();
-        Graphics2D g2 = img.createGraphics();
+        for (int i = 0; i < 3; i++) logic();
+//        try {
+//            File outputFile = new File("links1/img" + frame + ".png");
+//            ImageIO.write(img, "png", outputFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        Graphics2D g2 = img.createGraphics();
 //        g2.setColor(Color.RED);
 //        long frameDif = System.currentTimeMillis() - time;
 //        if(frameDif == 0) frameDif = 1;
@@ -215,7 +237,7 @@ public class Form extends JFrame implements Runnable {
 //                            a.sy = a.sy * 0.999f + b.sy * 0.001f;
                             if(d2 > NODE_RADIUS * NODE_RADIUS * 4) {
                                 double angle = Math.atan2(a.y - b.y, a.x - b.x);
-                                float dA = -0.015f;
+                                float dA = -0.02f;
                                 a.sx += (float)Math.cos(angle) * dA * SPEED;
                                 a.sy += (float)Math.sin(angle) * dA * SPEED;
                             }
