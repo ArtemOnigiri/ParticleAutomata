@@ -1,5 +1,8 @@
 package main;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Particle {
 
     public int type;
@@ -7,6 +10,10 @@ public class Particle {
     public float y;
     public float sx;
     public float sy;
+    public int links;
+    public Set<Particle> bonds;
+
+    public static int ids = 0;
 
     public Particle(int type, float x, float y) {
         this.type = type;
@@ -14,6 +21,8 @@ public class Particle {
         this.y = y;
         this.sx = 0;
         this.sy = 0;
+        this.links = 0;
+        this.bonds = new HashSet<>();
     }
 
 }

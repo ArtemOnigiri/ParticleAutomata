@@ -3,19 +3,22 @@ package main;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Form extends JFrame implements Runnable {
 
-    public static final int w = 800;
-    public static final int h = 800;
+    public static final int w = 1600;
+    public static final int h = 1200;
 
     public static final Color BG = new Color(20, 55, 75, 255);
+    public static final Color LINK = new Color(255, 230, 0, 200);
     public static final int NODE_RADIUS = 5;
 
-    public static final int nodeCount = 500;
+    public static final int nodeCount = 400;
     public static final int maxDist = 100;
     public static final int maxDist2 = maxDist * maxDist;
-    public static final float SPEED = 1f;
+    public static final float SPEED = 4f;
     public static final int BORDER = 30;
 
     public static final int fw = w / maxDist + 1;
@@ -27,17 +30,21 @@ public class Form extends JFrame implements Runnable {
     public static BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
     public static final float[][] COUPLING = {
-//            {	1,	-1,	-1,	1,	1,	1,	-1,	1	},
-//            {	-1,	1,	-1,	1,	1,	1,	1,	1	},
-//            {	-1,	-1,	1,	-1,	1,	1,	-1,	1	},
-//            {	1,	1,	1,	-1,	1,	1,	1,	1	},
-//            {	1,	1,	1,	1,	-1,	-1,	-1,	1	},
-//            {	1,	1,	-1,	1,	1,	-1,	-1,	1	},
-//            {	-1,	1,	-1,	1,	1,	1,	-1,	1	},
-//            {	1,	1,	1,	1,	-1,	1,	1,	-1	}
-            {1, -1, -1},
-            {1, -1, -1},
-            {1, 1, -1}
+            {1, 1, -1},
+            {1, 1, 1},
+            {1, -1, 1}
+    };
+
+    public static int[] LINKS = {
+            1,
+            3,
+            2
+    };
+
+    public static final float[][] LINKS_POSSIBLE = {
+            {0, 1, 1},
+            {1, 1, 1},
+            {1, 1, 2}
     };
 
     public static final Color[] COLORS = {
@@ -58,14 +65,43 @@ public class Form extends JFrame implements Runnable {
             }
         }
         for (int i = 0; i < nodeCount; i++) {
-            Particle p = new Particle((int)(Math.random() * COUPLING.length), (float)(Math.random() * w), (float)(Math.random() * h));
-            fields[(int)(p.x / Form.maxDist)][(int)(p.y / Form.maxDist)].particles.add(p);
+            add((int)(Math.random() * COUPLING.length), (float)(Math.random() * w), (float)(Math.random() * h));
         }
+
+        // Spinner
+//        addToCenter(2, -10, 0);
+//        addToCenter(2, 10, 0);
+//        addToCenter(0, 20, -5);
+//        addToCenter(0, -20, 5);
+        // Glider
+//        addToCenter(2, 5, 0);
+//        addToCenter(0, -5, 5);
+
+//        for (int k = 0; k < 30; k++) {
+//            float x = (float)(Math.random() * (w - 200)) + 100;
+//            float y = (float)(Math.random() * (h - 200)) + 100;
+//            for (int i = 0; i < (int)(Math.random() * 8) + 2; i++) {
+//                add(2, x + 20 - i * 10, y);
+//            }
+//            add(0, x + 30, y + 5);
+//        }
+
         this.setSize(w + 16, h + 38);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocation(50, 50);
         this.add(new JLabel(new ImageIcon(img)));
+    }
+
+    public static Particle addToCenter(int type, float x, float y) {
+        Particle p = add(type, x + w / 2, y + h / 2);
+        return p;
+    }
+
+    public static Particle add(int type, float x, float y) {
+        Particle p = new Particle(type, x, y);
+        fields[(int) (p.x / Form.maxDist)][(int) (p.y / Form.maxDist)].particles.add(p);
+        return p;
     }
 
     @Override
@@ -102,6 +138,10 @@ public class Form extends JFrame implements Runnable {
                     Particle a = field.particles.get(i1);
                     g2.setColor(COLORS[a.type]);
                     g2.fillOval((int) a.x - NODE_RADIUS, (int) a.y - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
+//                    g2.setColor(LINK);
+//                    for (Particle b: a.bonds) {
+//                        g2.drawLine((int) a.x, (int) a.y, (int) b.x, (int) b.y);
+//                    }
                 }
             }
         }
@@ -162,6 +202,25 @@ public class Form extends JFrame implements Runnable {
                         field.particles.remove(a);
                         Form.fields[(int)(a.x / Form.maxDist)][(int)(a.y / Form.maxDist)].particles.add(a);
                     }
+                    for (Iterator<Particle> iterator = a.bonds.iterator(); iterator.hasNext();) {
+                        Particle b = iterator.next();
+                        float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+                        if(d2 > maxDist2) {
+                            a.links--;
+                            b.links--;
+                            iterator.remove();
+                        }
+                        else {
+//                            a.sx = a.sx * 0.999f + b.sx * 0.001f;
+//                            a.sy = a.sy * 0.999f + b.sy * 0.001f;
+                            if(d2 > NODE_RADIUS * NODE_RADIUS * 4) {
+                                double angle = Math.atan2(a.y - b.y, a.x - b.x);
+                                float dA = -0.015f;
+                                a.sx += (float)Math.cos(angle) * dA * SPEED;
+                                a.sy += (float)Math.sin(angle) * dA * SPEED;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -206,10 +265,36 @@ public class Form extends JFrame implements Runnable {
     public void applyForce(Particle a, Particle b) {
         float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         if(d2 < maxDist2) {
-            double angle = Math.atan2(a.y - b.y, a.x - b.x);
-            if(d2 < 1) d2 = 1;
             float dA = COUPLING[a.type][b.type] / d2;
             float dB = COUPLING[b.type][a.type] / d2;
+            if (a.links < LINKS[a.type] && b.links < LINKS[b.type]) {
+                if(d2 < maxDist2) {
+                    if (!a.bonds.contains(b) && !b.bonds.contains(a)) {
+                        int typeCountA = 0;
+                        for (Particle p : a.bonds) {
+                            if(p.type == b.type) typeCountA++;
+                        }
+                        int typeCountB = 0;
+                        for (Particle p : b.bonds) {
+                            if(p.type == a.type) typeCountB++;
+                        }
+                        if(typeCountA < LINKS_POSSIBLE[a.type][b.type] && typeCountB < LINKS_POSSIBLE[b.type][a.type]) {
+                            a.bonds.add(b);
+                            b.bonds.add(a);
+                            a.links++;
+                            b.links++;
+                        }
+                    }
+                }
+            }
+            else {
+                if (!a.bonds.contains(b) && !b.bonds.contains(a)) {
+                    dA = 1 / d2;
+                    dB = 1 / d2;
+                }
+            }
+            double angle = Math.atan2(a.y - b.y, a.x - b.x);
+            if(d2 < 1) d2 = 1;
             if(d2 < NODE_RADIUS * NODE_RADIUS * 4) {
                 dA = 1 / d2;
                 dB = 1 / d2;
