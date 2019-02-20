@@ -25,4 +25,13 @@ public class Particle {
         this.bonds = new HashSet<>();
     }
 
+    public Particle linkTo(Particle b) {
+        this.bonds.add(b);
+        b.bonds.add(this);
+        this.links++;
+        b.links++;
+        Form.links.add(new Link(this, b));
+        return this;
+    }
+
 }
