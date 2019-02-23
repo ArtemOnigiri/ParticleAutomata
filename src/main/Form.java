@@ -75,13 +75,26 @@ public class Form extends JFrame implements Runnable, MouseListener {
             add((int)(Math.random() * COUPLING.length), (float)(Math.random() * w), (float)(Math.random() * h));
         }
 
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-//                Creatures.butterfly(i * 100 + 100, j * 100 + 100);
-            }
-        }
+//        for (int i = 0; i < 10; i++) {
+//            for (int j = 0; j < 10; j++) {
+//                if(Math.random() < 0.1) Creatures.butterfly(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.square(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.sunfish(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.worm(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.tadpole(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.crab(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.frog(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.frog2(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.glider(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.machaon(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.spinner(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.wings6(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.caterpillar(i * 100 + 100, j * 100 + 100);
+//                else if(Math.random() < 0.1) Creatures.star(i * 100 + 100, j * 100 + 100);
+//            }
+//        }
 
-//        Creatures.addSpinner(w / 2, h / 2);
+//        Creatures.butterfly(w / 2, h / 2);
 
         this.setSize(w + 16, h + 38);
         this.setVisible(true);

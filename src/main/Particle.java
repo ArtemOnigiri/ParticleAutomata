@@ -13,8 +13,6 @@ public class Particle {
     public int links;
     public Set<Particle> bonds;
 
-    public static int ids = 0;
-
     public Particle(int type, float x, float y) {
         this.type = type;
         this.x = x;

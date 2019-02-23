@@ -62,7 +62,7 @@ public class Creatures {
         }
     }
 
-    public static void worm(float x, float y) {
+    public static void caterpillar(float x, float y) {
         ArrayList<Particle> p = new ArrayList<>();
         p.add(new Particle(1, x + -0.35432434f, y + -6.645355f));
         p.add(new Particle(2, x + 13.336716f, y + -10.321838f));
@@ -269,6 +269,126 @@ public class Creatures {
         p.add(new Particle(0, x + 0.83496094f, y + 25.49353f));
         p.get(10).linkTo(p.get(13));
         p.get(0).linkTo(p.get(10));
+        for (Particle a : p) {
+            Form.fields[(int) (a.x / Form.maxDist)][(int) (a.y / Form.maxDist)].particles.add(a);
+        }
+    }
+
+    public static void square(float x, float y) {
+        ArrayList<Particle> p = new ArrayList<>();
+        p.add(new Particle(1, x + 2.7549973f, y + -1.243988f));
+        p.add(new Particle(1, x + -11.54216f, y + -4.9891663f));
+        p.add(new Particle(1, x + -8.683174f, y + -15.629608f));
+        p.add(new Particle(1, x + 5.30352f, y + -12.237061f));
+        p.add(new Particle(2, x + 18.690071f, y + -14.346161f));
+        p.add(new Particle(0, x + 29.182426f, y + -13.21875f));
+        p.get(4).linkTo(p.get(5));
+        p.get(3).linkTo(p.get(4));
+        p.get(2).linkTo(p.get(3));
+        p.add(new Particle(2, x + -20.103634f, y + -23.690186f));
+        p.add(new Particle(0, x + -29.704735f, y + -26.501831f));
+        p.get(6).linkTo(p.get(7));
+        p.get(2).linkTo(p.get(6));
+        p.get(1).linkTo(p.get(2));
+        p.add(new Particle(2, x + -25.603615f, y + -4.1426697f));
+        p.add(new Particle(0, x + -35.330498f, y + -7.482666f));
+        p.get(8).linkTo(p.get(9));
+        p.get(1).linkTo(p.get(8));
+        p.get(0).linkTo(p.get(1));
+        p.add(new Particle(2, x + 13.964371f, y + 5.839691f));
+        p.add(new Particle(0, x + 23.444397f, y + 9.762482f));
+        p.get(10).linkTo(p.get(11));
+        p.get(0).linkTo(p.get(10));
+        for (Particle a : p) {
+            Form.fields[(int) (a.x / Form.maxDist)][(int) (a.y / Form.maxDist)].particles.add(a);
+        }
+    }
+
+    public static void worm(float x, float y) {
+        ArrayList<Particle> p = new ArrayList<>();
+        p.add(new Particle(1, x + 4.3243103f, y + 0.7894287f));
+        p.add(new Particle(1, x + -2.4799805f, y + -7.805176f));
+        p.add(new Particle(2, x + -8.328888f, y + -18.236694f));
+        p.add(new Particle(2, x + -1.9667053f, y + -26.44629f));
+        p.add(new Particle(2, x + 7.5959167f, y + -22.256165f));
+        p.add(new Particle(1, x + 7.6371765f, y + -10.090576f));
+        p.get(4).linkTo(p.get(5));
+        p.get(3).linkTo(p.get(4));
+        p.get(2).linkTo(p.get(3));
+        p.get(1).linkTo(p.get(2));
+        p.get(0).linkTo(p.get(1));
+        p.add(new Particle(2, x + 4.711609f, y + 14.471924f));
+        p.add(new Particle(2, x + 3.1149292f, y + 24.81372f));
+        p.add(new Particle(2, x + 1.0279846f, y + 35.4281f));
+        p.add(new Particle(0, x + 4.7908936f, y + 44.82434f));
+        p.get(8).linkTo(p.get(9));
+        p.get(7).linkTo(p.get(8));
+        p.get(6).linkTo(p.get(7));
+        p.get(0).linkTo(p.get(6));
+        for (Particle a : p) {
+            Form.fields[(int) (a.x / Form.maxDist)][(int) (a.y / Form.maxDist)].particles.add(a);
+        }
+    }
+
+    public static void star(float x, float y) {
+        ArrayList<Particle> p = new ArrayList<>();
+        p.add(new Particle(1, x + -8.3967285f, y + -5.901184f));
+        p.add(new Particle(2, x + -18.449036f, y + -13.878906f));
+        p.add(new Particle(0, x + -15.954834f, y + -24.012085f));
+        p.get(1).linkTo(p.get(2));
+        p.get(0).linkTo(p.get(1));
+        p.add(new Particle(1, x + -8.150696f, y + 7.566101f));
+        p.add(new Particle(1, x + 6.2927246f, y + 13.468079f));
+        p.add(new Particle(1, x + 14.944275f, y + 3.449646f));
+        p.add(new Particle(0, x + 25.402588f, y + 4.6347046f));
+        p.get(5).linkTo(p.get(6));
+        p.add(new Particle(1, x + 6.8448486f, y + -8.683716f));
+        p.add(new Particle(2, x + 10.924316f, y + -19.472595f));
+        p.add(new Particle(0, x + 7.5004883f, y + -28.70996f));
+        p.get(8).linkTo(p.get(9));
+        p.get(7).linkTo(p.get(8));
+        p.get(5).linkTo(p.get(7));
+        p.get(4).linkTo(p.get(5));
+        p.add(new Particle(2, x + 8.439697f, y + 25.014038f));
+        p.add(new Particle(0, x + 7.028015f, y + 35.477234f));
+        p.get(10).linkTo(p.get(11));
+        p.get(4).linkTo(p.get(10));
+        p.get(3).linkTo(p.get(4));
+        p.add(new Particle(2, x + -18.410034f, y + 13.029358f));
+        p.add(new Particle(0, x + -17.510742f, y + 23.105164f));
+        p.get(12).linkTo(p.get(13));
+        p.get(3).linkTo(p.get(12));
+        p.get(0).linkTo(p.get(3));
+        for (Particle a : p) {
+            Form.fields[(int) (a.x / Form.maxDist)][(int) (a.y / Form.maxDist)].particles.add(a);
+        }
+    }
+
+    public static void starfish(float x, float y) {
+        ArrayList<Particle> p = new ArrayList<>();
+        p.add(new Particle(2, x + 3.8717651f, y + -6.1935425f));
+        p.add(new Particle(1, x + -7.0964355f, y + -1.9242554f));
+        p.add(new Particle(1, x + -13.970032f, y + 12.117981f));
+        p.add(new Particle(0, x + -9.7890625f, y + 22.560059f));
+        p.get(2).linkTo(p.get(3));
+        p.add(new Particle(1, x + -28.995178f, y + 10.204651f));
+        p.add(new Particle(0, x + -36.378296f, y + 17.864319f));
+        p.get(4).linkTo(p.get(5));
+        p.add(new Particle(1, x + -31.2417f, y + -3.7738037f));
+        p.add(new Particle(1, x + -16.52832f, y + -10.54657f));
+        p.add(new Particle(2, x + -12.570068f, y + -21.54309f));
+        p.add(new Particle(0, x + -8.693787f, y + -30.511047f));
+        p.get(8).linkTo(p.get(9));
+        p.get(7).linkTo(p.get(8));
+        p.get(6).linkTo(p.get(7));
+        p.add(new Particle(0, x + -42.154053f, y + -7.3530884f));
+        p.get(6).linkTo(p.get(10));
+        p.get(4).linkTo(p.get(6));
+        p.get(2).linkTo(p.get(4));
+        p.get(1).linkTo(p.get(2));
+        p.get(0).linkTo(p.get(1));
+        p.add(new Particle(0, x + 13.432251f, y + -2.6038818f));
+        p.get(0).linkTo(p.get(11));
         for (Particle a : p) {
             Form.fields[(int) (a.x / Form.maxDist)][(int) (a.y / Form.maxDist)].particles.add(a);
         }
