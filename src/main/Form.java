@@ -29,7 +29,7 @@ public class Form {
 
     public static BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
-    public static final int size = 3;
+    public static final int size = 2;
 
     public static boolean check(int a, Set<Integer> groups, int c) {
         if(groups.contains(a)) return false;
@@ -73,9 +73,9 @@ public class Form {
     }
 
     public static final Color[] COLORS = {
-            new Color(255, 200, 0),
-            new Color(0, 150, 150),
-            new Color(150, 0, 100),
+            new Color(250, 20, 20),
+            new Color(200, 140, 100),
+            new Color(80, 170, 140),
             new Color(0, 150, 230),
             new Color(10, 20, 230),
             new Color(130, 0, 200),
@@ -95,7 +95,7 @@ public class Form {
         }
         Set<Integer> groups = new HashSet<>();
         for (int i = 0; i < (1 << (size * size)); i++) {
-            if(check(i, groups, 1)) groups.add(i);
+            groups.add(i);
         }
         for (Integer g: groups) {
             int[][] rules = new int[size][size];
@@ -110,7 +110,7 @@ public class Form {
             }
             drawScene(img);
             try {
-                File outputFile = new File("img3/img" + g + ".png");
+                File outputFile = new File("img2/img" + g + ".png");
                 ImageIO.write(img, "png", outputFile);
             } catch (IOException e) {
                 e.printStackTrace();
