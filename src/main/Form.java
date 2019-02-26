@@ -1,18 +1,21 @@
 package main;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Form extends JFrame implements Runnable {
 
-    public static final int w = 800;
-    public static final int h = 800;
+    public static final int w = 400;
+    public static final int h = 400;
 
     public static final Color BG = new Color(20, 55, 75, 255);
     public static final int NODE_RADIUS = 5;
 
-    public static final int nodeCount = 500;
+    public static final int nodeCount = 200;
     public static final int maxDist = 100;
     public static final int maxDist2 = maxDist * maxDist;
     public static final float SPEED = 1f;
@@ -81,6 +84,12 @@ public class Form extends JFrame implements Runnable {
         drawScene(img);
         logic();
         Graphics2D g2 = img.createGraphics();
+        try {
+            File outputFile = new File("img/m3/T" + frame + ".png");
+            ImageIO.write(img, "png", outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //        g2.setColor(Color.RED);
 //        long frameDif = System.currentTimeMillis() - time;
 //        if(frameDif == 0) frameDif = 1;
