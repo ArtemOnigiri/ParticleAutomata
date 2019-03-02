@@ -51,12 +51,6 @@ public class Form extends JFrame implements Runnable {
             {1, 1, 2}
     };
 
-    private static final Color[] COLORS = {
-            new Color(250, 20, 20),
-            new Color(200, 140, 100),
-            new Color(80, 170, 140)
-    };
-
     public Form() {
         for (int i = 0; i < fw; i++) {
             for (int j = 0; j < fh; j++) {
@@ -76,7 +70,7 @@ public class Form extends JFrame implements Runnable {
     }
 
     private Particle add(int type, float x, float y) {
-        Particle p = new Particle(type, x, y);
+        Particle p = new Particle(ParticleType.values()[type], x, y);
         fields[(int) (p.x / MAX_DIST)][(int) (p.y / MAX_DIST)].particles.add(p);
         return p;
     }
@@ -106,7 +100,7 @@ public class Form extends JFrame implements Runnable {
                 Field field = fields[i][j];
                 for (int i1 = 0; i1 < field.particles.size(); i1++) {
                     Particle a = field.particles.get(i1);
-                    g2.setColor(COLORS[a.type]);
+                    g2.setColor(a.getColor());
                     g2.fillOval((int) a.x - NODE_RADIUS, (int) a.y - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
                     g2.setColor(LINK);
                     for (Particle b: a.bonds) {
@@ -244,21 +238,21 @@ public class Form extends JFrame implements Runnable {
     private void applyForce(Particle a, Particle b) {
         float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         if(d2 < MAX_DIST2) {
-            float dA = COUPLING[a.type][b.type] / d2;
-            float dB = COUPLING[b.type][a.type] / d2;
-            if (a.links < LINKS[a.type] && b.links < LINKS[b.type]) {
+            float dA = COUPLING[a.getType()][b.getType()] / d2;
+            float dB = COUPLING[b.getType()][a.getType()] / d2;
+            if (a.links < LINKS[a.getType()] && b.links < LINKS[b.getType()]) {
                 if(d2 < MAX_DIST2 / 4) {
                     if (!a.bonds.contains(b) && !b.bonds.contains(a)) {
                         int typeCountA = 0;
                         for (Particle p : a.bonds) {
-                            if (p.type == b.type) typeCountA++;
+                            if (p.getType() == b.getType()) typeCountA++;
                         }
                         int typeCountB = 0;
                         for (Particle p : b.bonds) {
-                            if (p.type == a.type) typeCountB++;
+                            if (p.getType() == a.getType()) typeCountB++;
                         }
                         // TODO: particles should connect to closest neighbors not to just first in a list
-                        if (typeCountA < LINKS_POSSIBLE[a.type][b.type] && typeCountB < LINKS_POSSIBLE[b.type][a.type]) {
+                        if (typeCountA < LINKS_POSSIBLE[a.getType()][b.getType()] && typeCountB < LINKS_POSSIBLE[b.getType()][a.getType()]) {
                             a.bonds.add(b);
                             b.bonds.add(a);
                             a.links++;
