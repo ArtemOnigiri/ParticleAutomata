@@ -102,12 +102,12 @@ public class Form extends JFrame implements Runnable {
                     Particle a = field.particles.get(i1);
                     g2.setColor(a.getColor());
                     g2.fillOval((int) a.x - NODE_RADIUS, (int) a.y - NODE_RADIUS, NODE_RADIUS * 2, NODE_RADIUS * 2);
-                    g2.setColor(LINK);
-                    for (Particle b: a.bonds) {
-                        g2.drawLine((int) a.x, (int) a.y, (int) b.x, (int) b.y);
-                    }
                 }
             }
+        }
+        g2.setColor(LINK);
+        for (Link link: links) {
+            g2.drawLine((int) link.a.x, (int) link.a.y, (int) link.b.x, (int) link.b.y);
         }
     }
 
@@ -202,16 +202,26 @@ public class Form extends JFrame implements Runnable {
                 Field field = fields[i][j];
                 for (int i1 = 0; i1 < field.particles.size(); i1++) {
                     Particle a = field.particles.get(i1);
+                    Particle particleToLink = null;
+                    float particleToLinkMinDist2 = (w + h) * (w + h);
                     for (int j1 = i1 + 1; j1 < field.particles.size(); j1++) {
                         Particle b = field.particles.get(j1);
-                        applyForce(a, b);
+                        float d2 = applyForce(a, b);
+                        if(d2 != -1 && d2 < particleToLinkMinDist2) {
+                            particleToLinkMinDist2 = d2;
+                            particleToLink = b;
+                        }
                     }
                     if(i < fw - 1) {
                         int iNext = i + 1;
                         Field field1 = fields[iNext][j];
                         for (int j1 = 0; j1 < field1.particles.size(); j1++) {
                             Particle b = field1.particles.get(j1);
-                            applyForce(a, b);
+                            float d2 = applyForce(a, b);
+                            if(d2 != -1 && d2 < particleToLinkMinDist2) {
+                                particleToLinkMinDist2 = d2;
+                                particleToLink = b;
+                            }
                         }
                     }
                     if(j < fh - 1) {
@@ -219,24 +229,40 @@ public class Form extends JFrame implements Runnable {
                         Field field1 = fields[i][jNext];
                         for (int j1 = 0; j1 < field1.particles.size(); j1++) {
                             Particle b = field1.particles.get(j1);
-                            applyForce(a, b);
+                            float d2 = applyForce(a, b);
+                            if(d2 != -1 && d2 < particleToLinkMinDist2) {
+                                particleToLinkMinDist2 = d2;
+                                particleToLink = b;
+                            }
                         }
                         if(i < fw - 1) {
                             int iNext = i + 1;
                             Field field2 = fields[iNext][jNext];
                             for (int j1 = 0; j1 < field2.particles.size(); j1++) {
                                 Particle b = field2.particles.get(j1);
-                                applyForce(a, b);
+                                float d2 = applyForce(a, b);
+                                if(d2 != -1 && d2 < particleToLinkMinDist2) {
+                                    particleToLinkMinDist2 = d2;
+                                    particleToLink = b;
+                                }
                             }
                         }
+                    }
+                    if(particleToLink != null) {
+                        a.bonds.add(particleToLink);
+                        particleToLink.bonds.add(a);
+                        a.links++;
+                        particleToLink.links++;
+                        links.add(new Link(a, particleToLink));
                     }
                 }
             }
         }
     }
 
-    private void applyForce(Particle a, Particle b) {
+    private float applyForce(Particle a, Particle b) {
         float d2 = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+        boolean canLink = false;
         if(d2 < MAX_DIST2) {
             float dA = COUPLING[a.getType()][b.getType()] / d2;
             float dB = COUPLING[b.getType()][a.getType()] / d2;
@@ -251,13 +277,8 @@ public class Form extends JFrame implements Runnable {
                         for (Particle p : b.bonds) {
                             if (p.getType() == a.getType()) typeCountB++;
                         }
-                        // TODO: particles should connect to closest neighbors not to just first in a list
                         if (typeCountA < LINKS_POSSIBLE[a.getType()][b.getType()] && typeCountB < LINKS_POSSIBLE[b.getType()][a.getType()]) {
-                            a.bonds.add(b);
-                            b.bonds.add(a);
-                            a.links++;
-                            b.links++;
-                            links.add(new Link(a, b));
+                            canLink = true;
                         }
                     }
                 }
@@ -279,6 +300,8 @@ public class Form extends JFrame implements Runnable {
             b.sx -= (float)Math.cos(angle) * dB * SPEED;
             b.sy -= (float)Math.sin(angle) * dB * SPEED;
         }
+        if(canLink) return d2;
+        return -1;
     }
 
 }
